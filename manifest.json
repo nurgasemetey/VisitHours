@@ -1,8 +1,8 @@
 {
-  "name": "URLColors",
-  "short_name": "URLColors",
-  "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.",
-  "version": "1.1.2",
+  "name": "WebsiteVisitHours",
+  "short_name": "WebsiteVisitHours",
+  "description": "Mark website if it is outside of visit hours",
+  "version": "1.0.0",
   "permissions": [
     "tabs", "http://*/*", "https://*/*"
   ],

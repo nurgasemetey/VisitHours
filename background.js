@@ -54,6 +54,7 @@ var removePreviousDivs = function(tabId) {
 };
 
 var addDivsToPage = function(tabId, tab) {
+
   const expirationTimeUnix = getValue('expirationTimeUnix');
   const snoozed = expirationTimeUnix && expirationTimeUnix > Date.now();
   if (snoozed) {
@@ -70,17 +71,22 @@ var addDivsToPage = function(tabId, tab) {
     var urlColorPairs = prefs.urlColorPairs || '';
     var keywordOptionsArray = urlColorPairs.split('\n');
     var keywordOptionsObj = {};
+    console.log(keywordOptionsArray);
     for ( var i = 0; i < keywordOptionsArray.length; i++) {
-      let keywordOptions = keywordOptionsArray[i].split(', ');
+      let keywordOptions = keywordOptionsArray[i].split(',');
       if (keywordOptions[0]) {
+        console.log("here");
         keywordOptionsObj[keywordOptions[0]] = keywordOptions;
       }
     }
+    console.log(keywordOptionsObj);
 
     Object.keys(keywordOptionsObj).forEach(function(key) {
       var opacity = keywordOptionsObj[key][5] || prefs.opacity || 1;
       var borderWidth = keywordOptionsObj[key][4] || prefs.borderWidth || '15px';
       var timer = keywordOptionsObj[key][3] || 2;
+      var color = keywordOptionsObj[key][1] || 'red';
+      console.log(opacity, borderWidth, timer,color);
       if (tab.url.match(key)) {
         chrome.tabs.executeScript(tabId,
           {
@@ -100,7 +106,7 @@ var addDivsToPage = function(tabId, tab) {
 
               divs.forEach(function(div, index) {
                 div.setAttribute('class', 'colordiv');
-                div.style.background = '${keywordOptionsObj[key][1]}';
+                div.style.background = '${color}';
                 div.style.position = 'fixed';
                 div.style.opacity = ${opacity};
                 div.style.zIndex = '99999999999999';
@@ -152,6 +158,8 @@ document.addEventListener('DOMContentLoaded', function () {
     resetSnooze();
     updateTabs();
   }
+  console.log("loaded");
+
   // initialize tabs
   chrome.tabs.query({}, function(tabArray) {
     tabArray.forEach((tab) => {
