@@ -1,3 +1,4 @@
+var STORAGE_KEY="websiteVisitHoursPrefs";
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // use localStorage for the application 'state'.
 
   // First, grab the default state from localStorage.
-  var prefs = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  var prefs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   var urlColorPairs = prefs.urlColorPairs || '';
   var opacity = prefs.opacity || .2;
   var borderWidth = prefs.borderWidth || '15px';

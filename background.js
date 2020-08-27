@@ -1,23 +1,24 @@
 var snoozeTimeout;
+var STORAGE_KEY="websiteVisitHoursPrefs";
 
 var getValue = function(property) {
-  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  let storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   return storage[property];
 };
 
 var updateLocalStorage = function(property, value) {
-  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  let storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   storage[property] = value;
-  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
 };
 
 var resetSnooze = function() {
   // Update state
-  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  let storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   delete storage['expirationTimeUnix'];
   delete storage['expirationTimeStamp'];
   delete storage['expirationTimeString'];
-  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
   // update UI
   var views = chrome.extension.getViews({
     type: "popup"
@@ -66,7 +67,7 @@ var addDivsToPage = function(tabId, tab) {
     updateTabs();
     return;
   }
-  var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs')) || {};
+  var prefs = JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || {};
   if (tab.url && prefs.active){
     var urlColorPairs = prefs.urlColorPairs || '';
     var keywordOptionsArray = urlColorPairs.split('\n');
