@@ -2,18 +2,17 @@ var STORAGE_KEY="websiteVisitHoursPrefs";
 
 
 document.addEventListener('DOMContentLoaded', function () {
+  console.log("start");
+
   var localStorage = window.localStorage;
   var urlColorPairsInput = document.querySelector('textarea');
   var opacityInput = document.querySelector('input[name="opacity"]');
   var borderWidthInput = document.querySelector('input[name="border-width"]');
   var activeCheckbox = document.querySelector('input[name="active"]');
-  var snoozeTimeInput = document.querySelector('input[name="snooze-time"]');
   var startMinuteInput = document.querySelector('input[name="start-minute"]');
   var endMinuteInput = document.querySelector('input[name="end-minute"]');
-  var snoozeButton = document.querySelector('button[id="snooze"]');
-  var cancelButton = document.querySelector('button[id="cancel"]');
-  var expirationTimeDiv = document.querySelector('div[id="expiration-time"]');
 
+  console.log("divs");
   // use localStorage for the application 'state'.
 
   // First, grab the default state from localStorage.
@@ -27,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var expirationTime = prefs.expirationTimeString || '';
   var startMinute = prefs.startMinute || -1;
   var endMinute = prefs.endMinute || -1;
+  console.log("defaults");
 
   // Now initialize state with default or previous values.
   chrome.extension.getBackgroundPage().updateLocalStorage('active', isActive);
@@ -43,24 +43,14 @@ document.addEventListener('DOMContentLoaded', function () {
   opacityInput.value = opacity;
   borderWidthInput.value = borderWidth;
   activeCheckbox.checked = isActive;
-  snoozeTimeInput.value = snoozeTime;
   startMinuteInput.value = startMinute;
   endMinuteInput.value = endMinute;
 
-  expirationTimeDiv.textContent = expirationTime ? `Snoozed until: ${expirationTime}` : '';
-  snoozeButton.disabled = !!expirationTime;
-  cancelButton.disabled = !expirationTime;
 
   urlColorPairsInput.addEventListener('input', function(e) {
     chrome.extension.getBackgroundPage().updateLocalStorage('urlColorPairs', e.target.value);
     chrome.extension.getBackgroundPage().updateTabs();
   }, false);
-
-  snoozeTimeInput.addEventListener('input', function(e) {
-    chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', e.target.value);
-    chrome.extension.getBackgroundPage().updateTabs();
-  }, false);
-
 
   startMinuteInput.addEventListener('input', function(e) {
     chrome.extension.getBackgroundPage().updateLocalStorage('startMinute', e.target.value);
@@ -83,42 +73,5 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
-  snoozeButton.addEventListener('click', function(e) {
-    // Get the minutes to snooze from the current value of the input.
-    var snoozeMinutes = chrome.extension.getBackgroundPage().getValue('snoozeTime');
-    var expirationTimeUnix = Date.now() + snoozeMinutes * 60000;
-    var expirationTimeStamp = new Date(expirationTimeUnix);
-    var localeString = expirationTimeStamp.toLocaleString();
-    // Update State
-    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeUnix', expirationTimeUnix);
-    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeStamp', expirationTimeStamp);
-    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeString', localeString);
-    expirationTimeDiv.textContent = 'Snoozed until: ' + localeString;
-    // Update UI
-    snoozeButton.disabled = true;
-    cancelButton.disabled = false;
-    chrome.extension.getBackgroundPage().handleSnooze();
-    chrome.extension.getBackgroundPage().updateTabs();
-  }, false);
-
-  cancelButton.addEventListener('click', function(e) {
-    // Update State
-    chrome.extension.getBackgroundPage().resetSnooze();
-    // Update UI
-    expirationTimeDiv.textContent = '';
-    snoozeButton.disabled = false;
-    cancelButton.disabled = true;
-    clearTimeout(chrome.extension.getBackgroundPage().snoozeTimeout);
-    chrome.extension.getBackgroundPage().updateTabs();
-  }, false);
-
-  activeCheckbox.addEventListener('change', function(e) {
-    chrome.extension.getBackgroundPage().updateLocalStorage('active', e.target.checked);
-    if (!e.target.checked) {
-      chrome.extension.getBackgroundPage().removePreviousDivsFromAllTabs();
-    } else {
-      chrome.extension.getBackgroundPage().addDivsToPageForAllTabs();
-    }
-  }, false);
 
 });
