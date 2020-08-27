@@ -61,8 +61,13 @@ var addDivsToPage = function(tabId, tab) {
   console.log("addDivsToPage", startMinute, endMinute);
   var dt =  new Date();
   var currentMinute = dt.getMinutes();
-  if((startMinute == -1 || endMinute == -1) || currentMinute < startMinute || currentMinute > endMinute) {
+  if((startMinute == -1 || endMinute == -1)) {
     console.log("out");
+    removePreviousDivsFromAllTabs();
+    return;
+  }
+  else if(currentMinute > startMinute && currentMinute < endMinute) {
+    console.log("in inteval")
     removePreviousDivsFromAllTabs();
     return;
   }
