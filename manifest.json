@@ -2,9 +2,9 @@
   "name": "WebsiteVisitHours",
   "short_name": "WebsiteVisitHours",
   "description": "Mark website if it is outside of visit hours",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "activeTab", "http://*/*", "https://*/*"
   ],
   "background": {
     "scripts": ["background.js"]
