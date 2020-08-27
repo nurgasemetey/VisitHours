@@ -7,6 +7,7 @@ var getValue = function(property) {
 };
 
 var updateLocalStorage = function(property, value) {
+  console.log(property, value);
   let storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   storage[property] = value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
@@ -55,16 +56,14 @@ var removePreviousDivs = function(tabId) {
 };
 
 var addDivsToPage = function(tabId, tab) {
-
-  const expirationTimeUnix = getValue('expirationTimeUnix');
-  const snoozed = expirationTimeUnix && expirationTimeUnix > Date.now();
-  if (snoozed) {
-    return;
-  }
-  if (expirationTimeUnix && expirationTimeUnix < Date.now()) {
-    // somehow state wasn't cleared yet.
-    resetSnooze();
-    updateTabs();
+  var startMinute = getValue('startMinute');
+  var endMinute = getValue('endMinute');
+  console.log("addDivsToPage", startMinute, endMinute);
+  var dt =  new Date();
+  var currentMinute = dt.getMinutes();
+  if((startMinute == -1 || endMinute == -1) || currentMinute < startMinute || currentMinute > endMinute) {
+    console.log("out");
+    removePreviousDivsFromAllTabs();
     return;
   }
   var prefs = JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || {};
@@ -147,20 +146,11 @@ var addDivsToPage = function(tabId, tab) {
 
 document.addEventListener('DOMContentLoaded', function () {
   // update snooze settings
-  var expirationTime = getValue('expirationTimeUnix');
-  var diffInTime = expirationTime - Date.now();
-  if (expirationTime && diffInTime > 0) {
-    snoozeTimeout = setTimeout(function() {
-      resetSnooze();
-      updateTabs();
-    }, diffInTime);
-  }
-  if (expirationTime && diffInTime < 0) {
-    resetSnooze();
-    updateTabs();
-  }
-  console.log("loaded");
-
+  var startMinute = getValue('startMinute');
+  var endMinute = getValue('endMinute');
+  console.log(startMinute, endMinute);
+  var dt =  new Date();
+  console.log(dt.getMinutes());
   // initialize tabs
   chrome.tabs.query({}, function(tabArray) {
     tabArray.forEach((tab) => {

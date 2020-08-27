@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var borderWidthInput = document.querySelector('input[name="border-width"]');
   var activeCheckbox = document.querySelector('input[name="active"]');
   var snoozeTimeInput = document.querySelector('input[name="snooze-time"]');
+  var startMinuteInput = document.querySelector('input[name="start-minute"]');
+  var endMinuteInput = document.querySelector('input[name="end-minute"]');
   var snoozeButton = document.querySelector('button[id="snooze"]');
   var cancelButton = document.querySelector('button[id="cancel"]');
   var expirationTimeDiv = document.querySelector('div[id="expiration-time"]');
@@ -16,12 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // First, grab the default state from localStorage.
   var prefs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  console.log("prefs", prefs);
   var urlColorPairs = prefs.urlColorPairs || '';
   var opacity = prefs.opacity || .2;
   var borderWidth = prefs.borderWidth || '15px';
   var isActive = typeof(prefs.active) === 'boolean' ? prefs.active : activeCheckbox.checked;
   var snoozeTime = prefs.snoozeTime || 5;
   var expirationTime = prefs.expirationTimeString || '';
+  var startMinute = prefs.startMinute || -1;
+  var endMinute = prefs.endMinute || -1;
 
   // Now initialize state with default or previous values.
   chrome.extension.getBackgroundPage().updateLocalStorage('active', isActive);
@@ -29,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.extension.getBackgroundPage().updateLocalStorage('opacity', opacity);
   chrome.extension.getBackgroundPage().updateLocalStorage('borderWidth', borderWidth);
   chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', snoozeTime);
+  chrome.extension.getBackgroundPage().updateLocalStorage('startMinute', startMinute);
+  chrome.extension.getBackgroundPage().updateLocalStorage('endMinute', endMinute);
 
 
   // Update the input values with initial state.
@@ -37,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
   borderWidthInput.value = borderWidth;
   activeCheckbox.checked = isActive;
   snoozeTimeInput.value = snoozeTime;
+  startMinuteInput.value = startMinute;
+  endMinuteInput.value = endMinute;
+
   expirationTimeDiv.textContent = expirationTime ? `Snoozed until: ${expirationTime}` : '';
   snoozeButton.disabled = !!expirationTime;
   cancelButton.disabled = !expirationTime;
@@ -49,6 +59,18 @@ document.addEventListener('DOMContentLoaded', function () {
   snoozeTimeInput.addEventListener('input', function(e) {
     chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', e.target.value);
     chrome.extension.getBackgroundPage().updateTabs();
+  }, false);
+
+
+  startMinuteInput.addEventListener('input', function(e) {
+    chrome.extension.getBackgroundPage().updateLocalStorage('startMinute', e.target.value);
+    // chrome.extension.getBackgroundPage().updateTabs();
+  }, false);
+
+
+  endMinuteInput.addEventListener('input', function(e) {
+    chrome.extension.getBackgroundPage().updateLocalStorage('endMinute', e.target.value);
+    // chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   opacityInput.addEventListener('input', function(e) {
